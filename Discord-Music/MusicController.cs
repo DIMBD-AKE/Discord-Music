@@ -1,8 +1,6 @@
-﻿using System.Diagnostics;
-using System.Runtime.InteropServices;
-using DSharpPlus.Entities;
-using DSharpPlus.VoiceNext;
+﻿using DSharpPlus.VoiceNext;
 using FluentResults;
+using NAudio.Wave;
 
 namespace Discord_Music;
 
@@ -76,6 +74,7 @@ public class MusicController
             _guildMusic[guildId].CancellationToken = token;
 
             await PlayAudio(guildId, data.Path, token);
+            
             await ContinuouslyPlay(guildId);
         }
         else
@@ -87,43 +86,25 @@ public class MusicController
     
     async Task PlayAudio(ulong guildId, string path, CancellationTokenSource cts)
     {
-        var ffmpegPath = "";
-
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            ffmpegPath = "ffmpeg";
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            ffmpegPath = "/usr/bin/ffmpeg";
-        
-        var ffmpegProcess = new Process
-        {
-            StartInfo = new ProcessStartInfo
-            {
-                FileName = ffmpegPath,
-                Arguments = $"-i {path} -ac 2 -f s16le -ar 48000 pipe:1",
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                RedirectStandardInput = true,
-                CreateNoWindow = true
-            }
-        };
-        
-        ffmpegProcess.Start();
-
         var transmitStream = _guildMusic[guildId].Connection.GetTransmitSink();
+
+        var audioFile = new MediaFoundationReader(path);
 
         try
         {
-            await ffmpegProcess.StandardOutput.BaseStream.CopyToAsync(transmitStream, cancellationToken: cts.Token);
+            await audioFile.CopyToAsync(transmitStream, cancellationToken: cts.Token);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
         }
         finally
         {
+            await audioFile.DisposeAsync();
+            
             await transmitStream.FlushAsync();
 
-            ffmpegProcess.Kill();
-            
-            ffmpegProcess.Dispose();
-            
-            Thread.Sleep(1);
+            await Task.Delay(1);
             
             File.Delete(path);
         }
