@@ -1,0 +1,6 @@
+﻿services:
+  asp:
+    image: discord-music
+    build:
+      context: .
+      dockerfile: Discord-Music/Dockerfile

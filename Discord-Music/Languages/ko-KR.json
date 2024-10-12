@@ -1,0 +1,8 @@
+﻿{
+  "not_playing_music": "재생중인 음악이 없습니다.",
+  "not_bot_in_channel": "봇이 음성 채널에 들어가있지 않습니다.",
+  "not_user_in_channel": "현재 음성 채널에 들어가있지 않습니다.",
+  "not_same_channel": "같은 음성 채널에 있지 않습니다.",
+  "play_success": "@1 을 재생합니다!",
+  "skip_success": "@1 를 넘겼습니다!"
+}
