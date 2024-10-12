@@ -13,7 +13,7 @@ public class Config
     {
         _configs = new Dictionary<string, string>();
         
-        LoadConfigFile("Config.json");
+        LoadConfigFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config.json"));
     }
 
     // JSON 파일에서 언어 데이터를 로드

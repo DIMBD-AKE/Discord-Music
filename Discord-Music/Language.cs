@@ -13,7 +13,7 @@ public class Language
     {
         _translations = new Dictionary<string, string>();
         
-        LoadLanguageFile("Languages/ko-KR.json");
+        LoadLanguageFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Languages/ko-KR.json"));
     }
 
     // JSON 파일에서 언어 데이터를 로드
