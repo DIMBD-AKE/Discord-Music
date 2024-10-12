@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using DSharpPlus.Entities;
 using DSharpPlus.VoiceNext;
 using FluentResults;
@@ -86,11 +87,18 @@ public class MusicController
     
     async Task PlayAudio(ulong guildId, string path, CancellationTokenSource cts)
     {
+        var ffmpegPath = "";
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            ffmpegPath = "ffmpeg";
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            ffmpegPath = "/usr/bin/ffmpeg";
+        
         var ffmpegProcess = new Process
         {
             StartInfo = new ProcessStartInfo
             {
-                FileName = "ffmpeg",
+                FileName = ffmpegPath,
                 Arguments = $"-i {path} -ac 2 -f s16le -ar 48000 pipe:1",
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
