@@ -24,7 +24,7 @@ public class MusicSlashCommands : ApplicationCommandModule
         var audioStreamInfo = streamManifest.GetAudioOnlyStreams().GetWithHighestBitrate();
         
         // 임시로 저장해둠
-        var tempStreamFile = $"Temp/{Guid.NewGuid()}";
+        var tempStreamFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Temp/{Guid.NewGuid()}");
 
         await _youtube.Videos.Streams.DownloadAsync(audioStreamInfo, tempStreamFile);
         

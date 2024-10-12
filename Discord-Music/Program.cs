@@ -25,9 +25,9 @@ class Program
         slash.RegisterCommands<MusicSlashCommands>();
         
         // 임시 폴더 초기화
-        if (Directory.Exists("Temp"))
-            Directory.Delete("Temp", true);
-        Directory.CreateDirectory("Temp");
+        if (Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"Temp")))
+            Directory.Delete(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"Temp"), true);
+        Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Temp"));
 
         await discord.ConnectAsync();
         await Task.Delay(-1);
