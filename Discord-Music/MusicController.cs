@@ -110,7 +110,7 @@ public class MusicController
 
             process.Start();
 
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[1024 * 2];
             int read;
 
             using (var ffmpegOutput = process.StandardOutput.BaseStream)
