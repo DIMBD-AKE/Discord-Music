@@ -75,8 +75,14 @@ public class MusicController
             var token = new CancellationTokenSource();
             _guildMusic[guildId].CancellationToken = token;
 
-            await PlayAudio(guildId, data.Path, token);
-            await ContinuouslyPlay(guildId);
+            try
+            {
+                await PlayAudio(guildId, data.Path, token);
+            }
+            finally
+            {
+                await ContinuouslyPlay(guildId);
+            }
         }
         else
         {
@@ -87,44 +93,45 @@ public class MusicController
     
     async Task PlayAudio(ulong guildId, string path, CancellationTokenSource cts)
     {
-        var ffmpegPath = "";
-
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            ffmpegPath = "ffmpeg";
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            ffmpegPath = "/usr/bin/ffmpeg";
-        
-        var ffmpegProcess = new Process
+        var process = new Process
         {
             StartInfo = new ProcessStartInfo
             {
-                FileName = ffmpegPath,
-                Arguments = $"-i {path} -ac 2 -f s16le -ar 48000 pipe:1",
+                FileName = "ffmpeg",
+                Arguments = $"-i \"{path}\" -ac 2 -f s16le -ar 48000 pipe:1",
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
-                RedirectStandardInput = true,
                 CreateNoWindow = true
             }
         };
         
-        ffmpegProcess.Start();
+        process.Start();
 
         var transmitStream = _guildMusic[guildId].Connection.GetTransmitSink();
 
         try
         {
-            await ffmpegProcess.StandardOutput.BaseStream.CopyToAsync(transmitStream, cancellationToken: cts.Token);
+            byte[] buffer = new byte[1024];
+            int read;
+
+            using (var ffmpegOutput = process.StandardOutput.BaseStream)
+            {
+                while ((read = await ffmpegOutput.ReadAsync(buffer, 0, buffer.Length)) > 0 && !cts.IsCancellationRequested)
+                {
+                    await transmitStream.WriteAsync(buffer, 0, read, cts.Token);
+                }
+            }
         }
         finally
         {
             await transmitStream.FlushAsync();
 
-            ffmpegProcess.Kill();
-            
-            ffmpegProcess.Dispose();
-            
+            process.Kill();
+
+            process.Dispose();
+
             Thread.Sleep(1);
-            
+
             File.Delete(path);
         }
     }
