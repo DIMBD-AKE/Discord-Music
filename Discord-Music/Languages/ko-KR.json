@@ -1,10 +1,11 @@
 ﻿{
-  "not_playing_music": "재생중인 음악이 없습니다.",
-  "not_bot_in_channel": "봇이 음성 채널에 들어가있지 않습니다.",
-  "not_user_in_channel": "현재 음성 채널에 들어가있지 않습니다.",
-  "not_same_channel": "같은 음성 채널에 있지 않습니다.",
-  "play_success": "@1 을 재생합니다!",
-  "skip_success": "@1 를 넘겼습니다!",
-  "bot_take": "@1 로 납치당했습니다!",
-  "queue": "현재 재생 대기열입니다."
+  "not_playing_music": "앗, 지금은 아무 노래도 안 나와요~!",
+  "not_bot_in_channel": "히히, 봇이 아직 음성 채널에 없네요!",
+  "not_user_in_channel": "우웅, 음성 채널에 아직 안 들어오셨네요!",
+  "not_same_channel": "우리 같은 채널에서 만나야 해요~!",
+  "play": "@1 노래가 시작되었어요!",
+  "skip": "@1 노래를 살짝 넘겼어요!",
+  "bot_take": "@1 에게 납치됐어요~! 꺄아!",
+  "queue": "지금 대기 중인 노래들이에요!",
+  "queue_now": ":arrow_forward: @1"
 }

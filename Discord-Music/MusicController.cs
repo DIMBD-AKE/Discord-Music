@@ -46,6 +46,8 @@ public class MusicController
         
         await _guildMusic[guildId].CancellationToken.CancelAsync();
 
+        await _guildMusic[guildId].Connection.GetTransmitSink().FlushAsync();
+
         var temp = _guildMusic[guildId].CurrentPlay;
         _guildMusic[guildId].CurrentPlay = null;
         _guildMusic[guildId].CancellationToken = null;
@@ -130,6 +132,9 @@ public class MusicController
         }
         finally
         {
+            if (_semaphore.CurrentCount == 0)
+                _semaphore.Release();
+            
             process.Kill();
 
             process.Dispose();
@@ -143,9 +148,12 @@ public class MusicController
     public async Task<DiscordChannel> ChangeChannel(ulong guildId, InteractionContext ctx)
     {
         await _semaphore.WaitAsync();
-        
+
         if (_guildMusic[guildId].Connection != null)
+        {
+            await _guildMusic[guildId].Connection.GetTransmitSink().FlushAsync();
             _guildMusic[guildId].Connection.Disconnect();
+        }
         
         var voiceChannel = ctx.Member?.VoiceState?.Channel;
         
@@ -156,5 +164,19 @@ public class MusicController
         _semaphore.Release();
         
         return voiceChannel;
+    }
+
+    public Result<List<string>> GetQueue(ulong guildId)
+    {
+        if (!_guildMusic.ContainsKey(guildId) || !_guildMusic[guildId].IsPlaying)
+            return Result.Fail(Language.Get("not_playing_music"));
+
+        var queue = new List<string>();
+        queue.Add(_guildMusic[guildId].CurrentPlay.MusicName);
+        
+        foreach (var play in _guildMusic[guildId].MusicQueue)
+            queue.Add(play.MusicName);
+
+        return Result.Ok(queue);
     }
 }

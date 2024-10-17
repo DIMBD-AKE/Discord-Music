@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
@@ -46,7 +47,7 @@ public class MusicSlashCommands : ApplicationCommandModule
             return;
         }
         
-        await ctx.EditResponseAutoAsync(new DiscordWebhookBuilder().WithContent(Language.Get("play_success", video.Title)));
+        await ctx.EditResponseAutoAsync(new DiscordWebhookBuilder().WithContent(Language.Get("play", video.Title)));
         
         await MusicController.Instance.Play(ctx.Guild.Id, vnc, video.Title, tempStreamFile);
     }
@@ -64,12 +65,49 @@ public class MusicSlashCommands : ApplicationCommandModule
         if (skipResult.IsSuccess)
         {
             var musicName = skipResult.Value.MusicName;
-            await ctx.EditResponseAutoAsync(new DiscordWebhookBuilder().WithContent(Language.Get("skip_success", musicName)));
+            await ctx.EditResponseAutoAsync(new DiscordWebhookBuilder().WithContent(Language.Get("skip", musicName)));
         }
         else
         {
             await ctx.EditResponseAutoAsync(new DiscordWebhookBuilder().WithContent(skipResult.ErrorMessage()));
         }
+    }
+    
+    [SlashCommand("대기열", "대기중인 노래 목록")]
+    public async Task QueueCommand(InteractionContext ctx)
+    {
+        await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
+
+        if (!await ctx.IsBotInChannel())
+            return;
+
+        var queueResult = MusicController.Instance.GetQueue(ctx.Guild.Id);
+
+        if (!queueResult.IsSuccess)
+        {
+            await ctx.EditResponseAutoAsync(new DiscordWebhookBuilder().WithContent(queueResult.ErrorMessage()));
+            return;
+        }
+        
+        var embed = new DiscordEmbedBuilder()
+            .WithTitle(Language.Get("queue"))
+            .WithColor(DiscordColor.Azure);
+
+        var descriptionBuilder = new StringBuilder();
+        for (var i = 0; i < Math.Min(queueResult.Value.Count, 10); i++)
+        {
+            if (i == 0)
+            {
+                descriptionBuilder.AppendLine(Language.Get("queue_now", queueResult.Value[i]));
+                descriptionBuilder.AppendLine();
+            }
+            else
+                descriptionBuilder.AppendLine($":number_{i}: {queueResult.Value[i]}");
+        }
+
+        embed.WithDescription(descriptionBuilder.ToString());
+
+        await ctx.EditResponseAutoAsync(new DiscordWebhookBuilder().AddEmbed(embed), 10000);
     }
     
     [SlashCommand("납치", "채널을 이동합니다.")]
