@@ -17,13 +17,13 @@ public static class Extensions
         return result.Errors.FirstOrDefault()?.Message;
     }
 
-    public static async Task<DiscordMessage> EditResponseAutoAsync(this InteractionContext ctx, DiscordWebhookBuilder builder)
+    public static async Task<DiscordMessage> EditResponseAutoAsync(this InteractionContext ctx, DiscordWebhookBuilder builder, int millisecondsDelay = 3000)
     {
         var message = await ctx.EditResponseAsync(builder);
 
         Task.Run(async () =>
         {
-            await Task.Delay(3000);
+            await Task.Delay(millisecondsDelay);
             
             await message.DeleteAsync();
         });
