@@ -93,34 +93,38 @@ public class MusicController
     
     async Task PlayAudio(ulong guildId, string path, CancellationTokenSource cts)
     {
-        var process = new Process
+        var transmitStream = _guildMusic[guildId].Connection.GetTransmitSink();
+
+        var process = new Process();
+
+        try
         {
-            StartInfo = new ProcessStartInfo
+            process.StartInfo = new ProcessStartInfo
             {
                 FileName = "ffmpeg",
                 Arguments = $"-i \"{path}\" -ac 2 -f s16le -ar 48000 pipe:1",
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
-            }
-        };
-        
-        process.Start();
+            };
 
-        var transmitStream = _guildMusic[guildId].Connection.GetTransmitSink();
+            process.Start();
 
-        try
-        {
             byte[] buffer = new byte[1024];
             int read;
 
             using (var ffmpegOutput = process.StandardOutput.BaseStream)
             {
-                while ((read = await ffmpegOutput.ReadAsync(buffer, 0, buffer.Length)) > 0 && !cts.IsCancellationRequested)
+                while ((read = await ffmpegOutput.ReadAsync(buffer, 0, buffer.Length)) > 0 &&
+                       !cts.IsCancellationRequested)
                 {
                     await transmitStream.WriteAsync(buffer, 0, read, cts.Token);
                 }
             }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
         }
         finally
         {
