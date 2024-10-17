@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using DSharpPlus.Entities;
+using DSharpPlus.SlashCommands;
 using DSharpPlus.VoiceNext;
 using FluentResults;
 
@@ -35,6 +36,8 @@ public class MusicController
     public static MusicController Instance => _instance ??= new MusicController();
     
     Dictionary<ulong, GuildMusic> _guildMusic = new();
+    
+    private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
     
     public async Task<Result<MusicPlayData>> Skip(ulong guildId)
     {
@@ -93,8 +96,6 @@ public class MusicController
     
     async Task PlayAudio(ulong guildId, string path, CancellationTokenSource cts)
     {
-        var transmitStream = _guildMusic[guildId].Connection.GetTransmitSink();
-
         var process = new Process();
 
         try
@@ -110,7 +111,7 @@ public class MusicController
 
             process.Start();
 
-            byte[] buffer = new byte[1024 * 2];
+            var buffer = new byte[1024 * 2];
             int read;
 
             using (var ffmpegOutput = process.StandardOutput.BaseStream)
@@ -118,18 +119,17 @@ public class MusicController
                 while ((read = await ffmpegOutput.ReadAsync(buffer, 0, buffer.Length)) > 0 &&
                        !cts.IsCancellationRequested)
                 {
-                    await transmitStream.WriteAsync(buffer, 0, read, cts.Token);
+                    await _semaphore.WaitAsync();
+                    
+                    var stream = _guildMusic[guildId].Connection.GetTransmitSink();
+                    await stream.WriteAsync(buffer, 0, read, cts.Token);
+
+                    _semaphore.Release();
                 }
             }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
         finally
         {
-            await transmitStream.FlushAsync();
-
             process.Kill();
 
             process.Dispose();
@@ -138,5 +138,23 @@ public class MusicController
 
             File.Delete(path);
         }
+    }
+
+    public async Task<DiscordChannel> ChangeChannel(ulong guildId, InteractionContext ctx)
+    {
+        await _semaphore.WaitAsync();
+        
+        if (_guildMusic[guildId].Connection != null)
+            _guildMusic[guildId].Connection.Disconnect();
+        
+        var voiceChannel = ctx.Member?.VoiceState?.Channel;
+        
+        var voiceNext = ctx.Client.GetVoiceNext();
+        
+        _guildMusic[guildId].Connection = await voiceNext.ConnectAsync(voiceChannel);
+
+        _semaphore.Release();
+        
+        return voiceChannel;
     }
 }

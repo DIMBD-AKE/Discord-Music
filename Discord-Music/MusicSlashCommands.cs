@@ -17,6 +17,9 @@ public class MusicSlashCommands : ApplicationCommandModule
     public async Task PlayCommand(InteractionContext ctx, [Option("노래", "링크 or 이름 찾기")] string content)
     {
         await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
+
+        if (!await ctx.IsUserInChannel())
+            return;
         
         // YouTube 비디오 정보 가져오기
         var video = await GetVideo(content);
@@ -36,10 +39,11 @@ public class MusicSlashCommands : ApplicationCommandModule
         if (vnc == null)
         {
             var voiceChannel = ctx.Member?.VoiceState?.Channel;
-            if (voiceChannel == null)
-                return;
-
             vnc = await voiceNext.ConnectAsync(voiceChannel);
+        }
+        else if (!await ctx.IsSameChannel())
+        {
+            return;
         }
         
         await ctx.EditResponseAutoAsync(new DiscordWebhookBuilder().WithContent(Language.Get("play_success", video.Title)));
@@ -51,33 +55,10 @@ public class MusicSlashCommands : ApplicationCommandModule
     public async Task SkipCommand(InteractionContext ctx)
     {
         await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
-        
-        var voiceChannel = ctx.Member?.VoiceState?.Channel;
-        if (voiceChannel == null)
-        {
-            await ctx.EditResponseAutoAsync(new DiscordWebhookBuilder().WithContent(Language.Get("not_user_in_channel")));
-            return;
-        }
-        
-        // 음성 채널 연결
-        var voiceNext = ctx.Client.GetVoiceNext();
-        var vnc = voiceNext.GetConnection(ctx.Guild);
 
-        // 채널에 있나?
-        if (vnc == null)
-        {
-            await ctx.EditResponseAutoAsync(new DiscordWebhookBuilder().WithContent(Language.Get("not_bot_in_channel")));
+        if (!await ctx.IsSameChannel())
             return;
-        }
-        else
-        {
-            if (vnc.TargetChannel.Id != voiceChannel.Id)
-            {
-                await ctx.EditResponseAutoAsync(new DiscordWebhookBuilder().WithContent(Language.Get("not_same_channel")));
-                return;
-            }
-        }
-
+        
         var skipResult = await MusicController.Instance.Skip(ctx.Guild.Id);
 
         if (skipResult.IsSuccess)
@@ -89,6 +70,22 @@ public class MusicSlashCommands : ApplicationCommandModule
         {
             await ctx.EditResponseAutoAsync(new DiscordWebhookBuilder().WithContent(skipResult.ErrorMessage()));
         }
+    }
+    
+    [SlashCommand("납치", "채널을 이동합니다.")]
+    public async Task TakeCommand(InteractionContext ctx)
+    {
+        await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
+
+        if (!await ctx.IsUserInChannel())
+            return;
+
+        if (!await ctx.IsBotInChannel())
+            return;
+        
+        var channel = await MusicController.Instance.ChangeChannel(ctx.Guild.Id, ctx);
+        
+        await ctx.EditResponseAutoAsync(new DiscordWebhookBuilder().WithContent(Language.Get("bot_take", channel.Name)));
     }
 
     async Task<Video> GetVideo(string content)
