@@ -113,7 +113,7 @@ public class MusicController
 
             process.Start();
 
-            var buffer = new byte[1024 * 2];
+            var buffer = new byte[1024];
             int read;
 
             using (var ffmpegOutput = process.StandardOutput.BaseStream)
@@ -134,6 +134,8 @@ public class MusicController
         {
             if (_semaphore.CurrentCount == 0)
                 _semaphore.Release();
+
+            await process.WaitForExitAsync();
             
             process.Kill();
 
