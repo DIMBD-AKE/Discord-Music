@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using DSharpPlus.Entities;
+using Newtonsoft.Json;
 
 namespace Discord_Music;
 
@@ -48,5 +49,65 @@ public class Language
             content = content.Replace($"@{i}", args[i - 1]);
 
         return content;
+    }
+
+    public static DiscordEmbed BuildLuckEmbed()
+    {
+        int GetLuckMessageIndex()
+        {
+            var today = DateTime.Today;
+            var seed = today.Year * 10000 + today.Month * 100 + today.Day;
+            var rnd = new Random(seed);
+            var chance = rnd.Next(0, 101);
+
+            if (chance <= 3)
+                return 0;  // 0%
+            else if (chance <= 7)
+                return 1;  // 10%
+            else if (chance <= 12)
+                return 2;  // 20%
+            else if (chance <= 22)
+                return 3;  // 30%
+            else if (chance <= 37)
+                return 4;  // 40%
+            else if (chance <= 57)
+                return 5;  // 50%
+            else if (chance <= 72)
+                return 6;  // 60%
+            else if (chance <= 82)
+                return 7;  // 70%
+            else if (chance <= 89)
+                return 8;  // 80%
+            else if (chance <= 95)
+                return 9;  // 90%
+            else
+                return 10; // 100%
+        }
+        
+        var luckGauges = new string[]
+        {
+            "0% [□□□□□□□□□□]",  // 0%
+            "10% [■□□□□□□□□□]",  // 10%
+            "20% [■■□□□□□□□□]",  // 20%
+            "30% [■■■□□□□□□□]",  // 30%
+            "40% [■■■■□□□□□□]",  // 40%
+            "50% [■■■■■□□□□□]",  // 50%
+            "60% [■■■■■■□□□□]",  // 60%
+            "70% [■■■■■■■□□□]",  // 70%
+            "80% [■■■■■■■■□□]",  // 80%
+            "90% [■■■■■■■■■□]",  // 90%
+            "100% [■■■■■■■■■■]"   // 100%
+        };
+
+        var index = GetLuckMessageIndex();
+
+        var embed = new DiscordEmbedBuilder
+        {
+            Title = $"🌟 오늘의 표게이지 🌟",
+            Description = luckGauges[index], // 게이지만 표시
+            Color = DiscordColor.Gold // 금색으로 강조
+        };
+
+        return embed.Build();
     }
 }

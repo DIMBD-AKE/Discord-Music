@@ -126,6 +126,14 @@ public class MusicSlashCommands : ApplicationCommandModule
         await ctx.EditResponseAutoAsync(new DiscordWebhookBuilder().WithContent(Language.Get("bot_take", channel.Name)));
     }
 
+    [SlashCommand("표정호", "오늘의 운세를 확인합니다.")]
+    public async Task PyoCommand(InteractionContext ctx)
+    {
+        await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
+        
+        await ctx.EditResponseAutoAsync(new DiscordWebhookBuilder().AddEmbed(Language.BuildLuckEmbed()), 10000);
+    }
+
     async Task<Video> GetVideo(string content)
     {
         if (content.Contains("watch?v="))
