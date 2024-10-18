@@ -138,10 +138,6 @@ public class MusicController
             process.Kill();
 
             process.Dispose();
-
-            Thread.Sleep(1);
-
-            File.Delete(path);
         }
     }
 
