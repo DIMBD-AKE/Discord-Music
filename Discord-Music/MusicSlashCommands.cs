@@ -136,7 +136,7 @@ public class MusicSlashCommands : ApplicationCommandModule
 
     async Task<Video> GetVideo(string content)
     {
-        if (content.Contains("watch?v="))
+        if (content.Contains("watch?v=") || content.Contains("?si="))
             return await _youtube.Videos.GetAsync(content);
 
         await foreach (var result in _youtube.Search.GetVideosAsync(content))
