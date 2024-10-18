@@ -134,12 +134,16 @@ public class MusicController
         {
             if (_semaphore.CurrentCount == 0)
                 _semaphore.Release();
-
-            await process.WaitForExitAsync();
+            
+            await _guildMusic[guildId].Connection.GetTransmitSink().FlushAsync();
             
             process.Kill();
 
             process.Dispose();
+            
+            Thread.Sleep(10);
+
+            File.Delete(path);
         }
     }
 
