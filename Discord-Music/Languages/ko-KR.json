@@ -7,5 +7,6 @@
   "skip": "@1 노래를 살짝 넘겼어요!",
   "bot_take": "@1 에게 납치됐어요~! 꺄아!",
   "queue": "지금 대기 중인 노래들이에요!",
-  "queue_now": ":arrow_forward: @1"
+  "queue_now": ":arrow_forward: @1",
+  "say": "대신 말했어요!"
 }
