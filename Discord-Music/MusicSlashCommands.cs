@@ -129,7 +129,7 @@ public class MusicSlashCommands : ApplicationCommandModule
     [SlashCommand("대말", "대신 말해드립니다.")]
     public async Task SayCommand(InteractionContext ctx, [Option("할말", "내용")] string content)
     {
-        await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral(true));
+        await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral(true));
 
         await ctx.Channel.SendMessageAsync(content);
     }
