@@ -21,12 +21,17 @@ public static class Extensions
     {
         var message = await ctx.EditResponseAsync(builder);
 
-        Task.Run(async () =>
-        {
-            await Task.Delay(millisecondsDelay);
-            
+        if (millisecondsDelay == 0)
             await message.DeleteAsync();
-        });
+        else
+        {
+            Task.Run(async () =>
+            {
+                await Task.Delay(millisecondsDelay);
+                
+                await message.DeleteAsync();
+            });
+        }
         
         return message;
     }
