@@ -1,6 +1,15 @@
 ﻿services:
-  asp:
-    image: discord-music
+  bot:
     build:
       context: .
       dockerfile: Discord-Music/Dockerfile
+    container_name: discord-music-bot
+    restart: always
+    volumes:
+      - ./Discord-Music/Config.json:/app/Config.json
+      - ./Discord-Music/Languages:/app/Languages
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
