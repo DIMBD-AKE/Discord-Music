@@ -4,7 +4,7 @@
       context: .
       dockerfile: Discord-Music/Dockerfile
     container_name: discord-music-bot
-    restart: always
+    restart: unless-stopped
     volumes:
       - ./Discord-Music/Config.json:/app/Config.json
       - ./Discord-Music/Languages:/app/Languages
