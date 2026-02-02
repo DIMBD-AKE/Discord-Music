@@ -114,10 +114,12 @@ internal class VideoController(HttpClient http)
               "contentCheckOk": true,
               "context": {
                 "client": {
-                  "clientName": "ANDROID",
-                  "clientVersion": "20.10.38",
+                  "clientName": "ANDROID_VR",
+                  "clientVersion": "1.60.19",
+                  "deviceMake": "Oculus",
+                  "deviceModel": "Quest 3",
                   "osName": "Android",
-                  "osVersion": "11",
+                  "osVersion": "12L",
                   "platform": "MOBILE",
                   "visitorData": {{Json.Serialize(visitorData)}},
                   "hl": "en",
