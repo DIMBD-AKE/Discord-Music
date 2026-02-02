@@ -1,0 +1,16 @@
+C:\Users\dream\데스크탑\C#\Discord-Music\YoutubeExplode\bin\Debug\net7.0\YoutubeExplode.deps.json
+C:\Users\dream\데스크탑\C#\Discord-Music\YoutubeExplode\bin\Debug\net7.0\YoutubeExplode.dll
+C:\Users\dream\데스크탑\C#\Discord-Music\YoutubeExplode\bin\Debug\net7.0\YoutubeExplode.pdb
+C:\Users\dream\데스크탑\C#\Discord-Music\YoutubeExplode\bin\Debug\net7.0\YoutubeExplode.xml
+C:\Users\dream\데스크탑\C#\Discord-Music\YoutubeExplode\obj\Debug\net7.0\YoutubeExplode.csproj.AssemblyReference.cache
+C:\Users\dream\데스크탑\C#\Discord-Music\YoutubeExplode\obj\Debug\net7.0\YoutubeExplode.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\dream\데스크탑\C#\Discord-Music\YoutubeExplode\obj\Debug\net7.0\YoutubeExplode.AssemblyInfoInputs.cache
+C:\Users\dream\데스크탑\C#\Discord-Music\YoutubeExplode\obj\Debug\net7.0\YoutubeExplode.AssemblyInfo.cs
+C:\Users\dream\데스크탑\C#\Discord-Music\YoutubeExplode\obj\Debug\net7.0\YoutubeExplode.csproj.CoreCompileInputs.cache
+C:\Users\dream\데스크탑\C#\Discord-Music\YoutubeExplode\obj\Debug\net7.0\YoutubeExplode.sourcelink.json
+C:\Users\dream\데스크탑\C#\Discord-Music\YoutubeExplode\obj\Debug\net7.0\YoutubeExplode.csproj.Fody.CopyLocal.cache
+C:\Users\dream\데스크탑\C#\Discord-Music\YoutubeExplode\obj\Debug\net7.0\YoutubeExplode.dll
+C:\Users\dream\데스크탑\C#\Discord-Music\YoutubeExplode\obj\Debug\net7.0\refint\YoutubeExplode.dll
+C:\Users\dream\데스크탑\C#\Discord-Music\YoutubeExplode\obj\Debug\net7.0\YoutubeExplode.xml
+C:\Users\dream\데스크탑\C#\Discord-Music\YoutubeExplode\obj\Debug\net7.0\YoutubeExplode.pdb
+C:\Users\dream\데스크탑\C#\Discord-Music\YoutubeExplode\obj\Debug\net7.0\ref\YoutubeExplode.dll

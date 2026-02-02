@@ -1,9 +1,11 @@
 ﻿using System.Diagnostics;
+using System.Net;
 using System.Text;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.VoiceNext;
+using Polly;
 using YoutubeExplode;
 using YoutubeExplode.Videos;
 using YoutubeExplode.Videos.Streams;
@@ -13,25 +15,44 @@ namespace Discord_Music;
 public class MusicSlashCommands : ApplicationCommandModule
 {
     private readonly YoutubeClient _youtube = new YoutubeClient();
-    
+
     [SlashCommand("재생", "유튜브에서 노래를 찾아 재생합니다.")]
     public async Task PlayCommand(InteractionContext ctx, [Option("노래", "링크 or 이름 찾기")] string content)
     {
+        var retryPolicy = Policy
+            .HandleResult<StreamManifest>(r => r == null)
+            .RetryAsync(5, (result, retryCount, context) =>
+            {
+                Console.WriteLine($"Retry {retryCount} of {context.PolicyKey} at {DateTime.Now}");
+                Thread.Sleep(TimeSpan.FromSeconds(Math.Pow(2, retryCount)));
+            });
+
         await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
 
         if (!await ctx.IsUserInChannel())
             return;
-        
+
         // YouTube 비디오 정보 가져오기
         var video = await GetVideo(content);
-        var streamManifest = await _youtube.Videos.Streams.GetManifestAsync(video.Id);
+        var streamManifest =
+            await retryPolicy.ExecuteAsync(async () =>
+            {
+                try
+                {
+                    return await _youtube.Videos.Streams.GetManifestAsync(video.Id);
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
+            });
         var audioStreamInfo = streamManifest.GetAudioOnlyStreams().GetWithHighestBitrate();
-        
+
         // 임시로 저장해둠
         var tempStreamFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Temp/{Guid.NewGuid()}");
 
         await _youtube.Videos.Streams.DownloadAsync(audioStreamInfo, tempStreamFile);
-        
+
         // 음성 채널 연결
         var voiceNext = ctx.Client.GetVoiceNext();
         var vnc = voiceNext.GetConnection(ctx.Guild);
@@ -46,12 +67,12 @@ public class MusicSlashCommands : ApplicationCommandModule
         {
             return;
         }
-        
+
         await ctx.EditResponseAutoAsync(new DiscordWebhookBuilder().WithContent(Language.Get("play", video.Title)));
-        
+
         await MusicController.Instance.Play(ctx.Guild.Id, vnc, video.Title, tempStreamFile);
     }
-    
+
     [SlashCommand("스킵", "재생중인 노래를 넘깁니다.")]
     public async Task SkipCommand(InteractionContext ctx)
     {

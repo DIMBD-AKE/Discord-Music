@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Discord-Music", "Discord-Music\Discord-Music.csproj", "{B7BE188E-9122-4711-B113-699D01B2C1FF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeExplode", "YoutubeExplode\YoutubeExplode.csproj", "{A0CF8F72-1210-4A89-8941-8E3257674F53}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{B7BE188E-9122-4711-B113-699D01B2C1FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7BE188E-9122-4711-B113-699D01B2C1FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7BE188E-9122-4711-B113-699D01B2C1FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0CF8F72-1210-4A89-8941-8E3257674F53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0CF8F72-1210-4A89-8941-8E3257674F53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0CF8F72-1210-4A89-8941-8E3257674F53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0CF8F72-1210-4A89-8941-8E3257674F53}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
