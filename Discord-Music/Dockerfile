@@ -4,7 +4,6 @@ WORKDIR /src
 
 # 모든 .csproj 파일들을 구조에 맞춰 복사 (restore 캐시 활용)
 COPY ["Discord-Music/Discord-Music.csproj", "Discord-Music/"]
-COPY ["YoutubeExplode/YoutubeExplode.csproj", "YoutubeExplode/"]
 
 # 의존성 복구 (restore)
 RUN dotnet restore "Discord-Music/Discord-Music.csproj"
